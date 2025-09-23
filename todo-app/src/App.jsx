@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Todo from './components/Todo'
 import './App.css'
-import { categories } from './utils/categories.js'
+// import { categories } from './utils/categories.js'
 
 function App() {
   const [tasks, setTasks] = useState(() => {
@@ -9,13 +9,19 @@ function App() {
       || []
   })
   const [task, setTask] = useState("")
-  const [category, setCategory] = useState(Object.entries(categories)[0][0])
-  const [filteredTasks, setFilteredTasks] = useState(tasks)
-  const [filteredString, setFilteredString] = useState("")
+  const [filteredTasks, setFilteredTasks] = useState([])
+  const [filter, setFilter] = useState("all")
 
-  useEffect(() => {
-    setFilteredTasks(tasks.filter(() => true))
-  }, [filteredString, tasks])
+  // const getFilteredTodos = () => {
+  //   switch (filter) {
+  //     case 'active':
+  //       return tasks.filter(todo => !todo.completed);
+  //     case 'completed':
+  //       return tasks.filter(todo => todo.completed);
+  //     default:
+  //       return tasks;
+  //   }
+  // };
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks))
@@ -24,16 +30,34 @@ function App() {
 
   const handleAdd = (e) => {
     e.preventDefault()
-    if(task.trim().length == 0) return
+    if (task.trim().length == 0) return
     const newTask = {
       id: crypto.randomUUID(),
       task,
-      category: 'active'
+      category,
+      completed: false
     }
     setTasks((oldValue) => [newTask, ...oldValue])
     setTask("")
   }
- 
+
+  const handleDelete = (value) => {
+    setTasks(tasks.filter(task => task.id !== value))
+  }
+
+  const handleCompleted = (value) => {
+    setTasks(tasks => tasks.map(task => task.id == value ?
+      { ...task, completed: !task.completed } : task)
+    );
+  }
+
+  const filters = [
+    { key: 'all', label: 'Все' },
+    { key: 'active', label: 'Активные' },
+    { key: 'completed', label: 'Завершенные' }
+  ];
+  
+
   return (
     <>
       <div className="container" >
@@ -51,22 +75,29 @@ function App() {
           </div>
         </div>
         <div className="filters">
-          <button className="filter-btn active" data-filter="all">Все</button>
-          <button className="filter-btn" data-filter="active">Активные</button>
-          <button className="filter-btn" data-filter="completed">Завершенные</button>
+          {filters.map(filterButton => (
+            <button key={filterButton.key}
+              onClick={() => setFilter(filterButton.key)} className={`filter-btn ${filter === filterButton.key ? 'active' : ''}`} >{filterButton.label}</button>
+          ))}
         </div>
+
         <div className="todo-list">
           {filteredTasks.map((el) => (
-            <Todo key={el.id} {...el} />
+            <Todo key={el.id}
+              task={el.task}
+              completed={el.completed}
+              onCompleted={() => handleCompleted(el.id)}
+              onDelete={() => handleDelete(el.id)}
+              {...el} />
           ))}
+
         </div>
         <div className="stats">
           Всего: 4 | Активных: 3 | Завершено: 1
         </div>
       </div >
     </>
-  )
-}
+  );
+};
 
 export default App
-//https://www.learnbestcoding.com/post/63/conditional-classnames-styles-react-js

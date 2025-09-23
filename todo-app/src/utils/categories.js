@@ -1,6 +1,7 @@
 export const categories = {
+  all: "Все",
   active: "Активные",
-  complited: "Завершенные"
+  completed: "Завершенные"
 }
 
 export const abc = 2
