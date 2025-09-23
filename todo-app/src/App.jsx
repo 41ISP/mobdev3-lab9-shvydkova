@@ -9,19 +9,19 @@ function App() {
       || []
   })
   const [task, setTask] = useState("")
-  const [filteredTasks, setFilteredTasks] = useState([])
   const [filter, setFilter] = useState("all")
 
-  // const getFilteredTodos = () => {
-  //   switch (filter) {
-  //     case 'active':
-  //       return tasks.filter(todo => !todo.completed);
-  //     case 'completed':
-  //       return tasks.filter(todo => todo.completed);
-  //     default:
-  //       return tasks;
-  //   }
-  // };
+  const getFilteredTodos = () => {
+    switch (filter) {
+      case 'active':
+        return tasks.filter(todo => !todo.completed);
+      case 'completed':
+        return tasks.filter(todo => todo.completed);
+      default:
+        return tasks;
+    }
+  };
+  const filteredTasks = getFilteredTodos();
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks))
@@ -34,7 +34,6 @@ function App() {
     const newTask = {
       id: crypto.randomUUID(),
       task,
-      category,
       completed: false
     }
     setTasks((oldValue) => [newTask, ...oldValue])
@@ -57,6 +56,9 @@ function App() {
     { key: 'completed', label: 'Завершенные' }
   ];
   
+  const totalTasks = tasks.length;
+  const activeTasks = tasks.filter(task => !task.completed).length;
+  const completedTasks = tasks.filter(task => task.completed).length;
 
   return (
     <>
@@ -87,13 +89,12 @@ function App() {
               task={el.task}
               completed={el.completed}
               onCompleted={() => handleCompleted(el.id)}
-              onDelete={() => handleDelete(el.id)}
-              {...el} />
+              onDelete={() => handleDelete(el.id)} />
           ))}
 
         </div>
         <div className="stats">
-          Всего: 4 | Активных: 3 | Завершено: 1
+          Всего: {totalTasks} | Активных: {activeTasks} | Завершено: {completedTasks}
         </div>
       </div >
     </>
