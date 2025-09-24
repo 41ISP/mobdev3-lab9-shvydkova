@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import Todo from './components/Todo'
 import './App.css'
-// import { categories } from './utils/categories.js'
 
 function App() {
   const [tasks, setTasks] = useState(() => {
@@ -9,7 +8,7 @@ function App() {
       || []
   })
   const [task, setTask] = useState("")
-  const [filter, setFilter] = useState("all")
+  const [filter, setFilter] = useState()
 
   const getFilteredTodos = () => {
     switch (filter) {
@@ -55,7 +54,7 @@ function App() {
     { key: 'active', label: 'Активные' },
     { key: 'completed', label: 'Завершенные' }
   ];
-  
+
   const totalTasks = tasks.length;
   const activeTasks = tasks.filter(task => !task.completed).length;
   const completedTasks = tasks.filter(task => task.completed).length;
@@ -91,7 +90,6 @@ function App() {
               onCompleted={() => handleCompleted(el.id)}
               onDelete={() => handleDelete(el.id)} />
           ))}
-
         </div>
         <div className="stats">
           Всего: {totalTasks} | Активных: {activeTasks} | Завершено: {completedTasks}
